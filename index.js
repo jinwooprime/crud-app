@@ -1,15 +1,21 @@
-const express = require('express')
-const app = express()
+const express = require('express');
+// Creating an Express application
+const app = express();
 const mongoose = require('mongoose');
-const Product = require('./models/product.model.js')
+const Product = require('./models/product.model.js');
 
-app.use(express.json())
-app.use(express.urlencoded({extended: false}))
+// Middleware to parse incoming JSON requests
+app.use(express.json());
 
+// Middleware to parse incoming URL-encoded requests
+app.use(express.urlencoded({extended: false}));
+
+// Route to test node server
 app.get('/', (req, res) => {
-    res.send("Hello from Node API Server Updated")
+    res.send("Hello from Node API Server Updated");
 });
 
+// Route to handle GET requests to fetch a specific product by ID
 app.get('/api/products/:id', async (req,res) => {
     try {
         const { id } = req.params;
@@ -25,6 +31,7 @@ app.get('/api/products/:id', async (req,res) => {
     }
 });
 
+// Route to handle GET requests to fetch all products
 app.get('/api/products', async (req,res) => {
     try {
         const products = await Product.find({});
@@ -34,6 +41,7 @@ app.get('/api/products', async (req,res) => {
     }
 });
 
+// Route to handle POST requests to add a new product
 app.post('/api/product/add', async (req, res) => {
     try {
         const product = await Product.create(req.body);
@@ -43,6 +51,7 @@ app.post('/api/product/add', async (req, res) => {
     }
 });
 
+// Route to handle PUT requests to update a product by ID
 app.put('/api/product/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -58,6 +67,7 @@ app.put('/api/product/:id', async (req, res) => {
     }
 });
 
+// Route to handle DELETE requests to delete a product by ID
 app.delete('/api/product/:id', async (req,res) => {
     try {
         const { id } = req.params;
@@ -73,6 +83,7 @@ app.delete('/api/product/:id', async (req,res) => {
     }
 });
 
+// Connecting to MongoDB using Mongoose
 mongoose.connect("mongodb+srv://<username>:<password>@backenddb.2ansun2.mongodb.net/Node-API?retryWrites=true&w=majority&appName=BackendDB")
 .then(() => {
     console.log("Connected to MONGO!");
