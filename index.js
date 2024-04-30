@@ -14,7 +14,7 @@ app.use(express.urlencoded({extended: false}));
 
 // Route to test node server
 app.get('/hello', (req, res) => {
-    res.send("Hello from Node API Server Updated");
+    res.send("Hello from Node API Server");
 });
 
 // Route to handle GET requests to fetch a specific product by ID
@@ -24,7 +24,7 @@ app.get('/api/products/:id', async (req,res) => {
         const product = await Product.findById(id);
 
         if (!product) {
-            return res.status(404).json({message: "Product does not exist!"});
+            return res.status(404).json({message: `Product '${id}' does not exist!`});
         }
 
         res.status(200).json(product);
@@ -60,7 +60,7 @@ app.put('/api/product/:id', async (req, res) => {
         const product = await Product.findByIdAndUpdate(id, req.body);
 
         if (!product) {
-            return res.status(404).json({message: "Product does not exist!"});
+            return res.status(404).json({message: `Product '${id}' does not exist!`});
         }
         const updatedProduct = await Product.findById(id);
         res.status(200).json(updatedProduct);
@@ -76,10 +76,10 @@ app.delete('/api/product/:id', async (req,res) => {
         const product = await Product.findByIdAndDelete(id);
 
         if (!product) {
-            return res.status(404).json({message: "Product does not exist!"});
+            return res.status(404).json({message: `Product '${id}' does not exist!`});
         }
 
-        res.status(200).json({message: "The product has been deleted!"});
+        res.status(200).json({message: `Product '${id}' has been deleted!`});
     } catch (error) {
         res.status(500).json({message: error.message});
     }
@@ -89,8 +89,8 @@ app.delete('/api/product/:id', async (req,res) => {
 mongoose.connect("mongodb+srv://only-for-node:7c9GTf3HbhXmdJFE@backenddb.2ansun2.mongodb.net/Node-API?retryWrites=true&w=majority&appName=BackendDB")
 .then(() => {
     console.log("Connected to MONGO!");
-    app.listen(3000, () => {
-        console.log("Server is running on port 3000!")
+    app.listen(80, () => {
+        console.log("Server is running on port 80!")
     });
 })
 .catch(() => {
