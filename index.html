@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Management</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Product Management</h1>
+    
+    <form id="productForm">
+        <label for="productName">Product Name:</label>
+        <input type="text" id="productName" name="productName" required>
+        <label for="productQuantity">Quantity:</label>
+        <input type="number" id="productQuantity" name="productQuantity" required>
+        <label for="productPrice">Price:</label>
+        <input type="number" id="productPrice" name="productPrice" required step="0.01">
+        <button type="submit">Add Product</button>
+    </form>
+
+    <button id="getProductsBtn">Refresh Products</button>
+    
+    <ul id="productList">
+
+    <script>
+        const productList = document.getElementById('productList');
+        const productForm = document.getElementById('productForm');
+        const getProductsBtn = document.getElementById('getProductsBtn');
+
+        productForm.addEventListener('submit', async (event) => {
+            const productName = document.getElementById('productName').value;
+            const productQuantity = document.getElementById('productQuantity').value;
+            const productPrice = document.getElementById('productPrice').value;
+
+            try {
+                // Sending POST request to add a product
+                const response = await fetch('http://localhost:3000/api/product/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        name: productName,
+                        quantity: productQuantity,
+                        price: productPrice
+                    })
+                });
+
+                const data = await response.json();
+                // Add the new product to the list
+                const newItem = document.createElement('li');
+                // textContent pretty much sets the content inside of each item in the list
+                newItem.textContent = `${data.name} - Quantity: ${data.quantity} - Price: ${data.price}`;
+
+                productList.appendChild(newItem);
+            } catch (error) {
+                console.error('Error adding product:', error);
+            }
+        });
+
+        // Function to fetch and display all products
+        async function fetchProducts() {
+            try {
+                const response = await fetch('http://localhost:3000/api/products');
+                const products = await response.json();
+                // The line below ensures the list wont duplicate itself
+                productList.innerHTML = '';
+
+                products.forEach(product => {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = `${product.name} - Quantity: ${product.quantity} - Price: ${product.price}`;
+                    
+                    const updateBtn = document.createElement('button');
+                    updateBtn.textContent = 'Update';
+                    updateBtn.addEventListener('click', async () => {
+                        const updatedName = prompt('Enter updated product name:', product.name);
+                        const updatedQuantity = prompt('Enter updated quantity:', product.quantity);
+                        const updatedPrice = prompt('Enter updated price:', product.price);
+
+                        try {
+                            // Update the product
+                            const response = await fetch(`http://localhost:3000/api/product/${product._id}`, {
+                                method: 'PUT',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    name: updatedName,
+                                    quantity: updatedQuantity,
+                                    price: updatedPrice
+                                })
+                            });
+
+                            const updatedData = await response.json();
+                            // Update the product item in the list
+                            listItem.textContent = `${updatedData.name} - Quantity: ${updatedData.quantity} - Price: ${updatedData.price}`;
+                        } catch (error) {
+                            console.error('Error updating product:', error);
+                        }
+                    });
+                    listItem.appendChild(updateBtn);
+
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.textContent = 'Delete';
+                    deleteBtn.addEventListener('click', async () => {
+                        try {
+                            // Sending DELETE request to delete the product
+                            const response = await fetch(`http://localhost:3000/api/product/${product._id}`, {
+                                method: 'DELETE'
+                            });
+
+                            if (response.ok) {
+                                // Remove the product from the list
+                                listItem.remove();
+                            } else {
+                                console.error('Failed to delete product:', response.statusText);
+                            }
+                        } catch (error) {
+                            console.error('Error deleting product:', error);
+                        }
+                    });
+                    listItem.appendChild(deleteBtn);
+
+                    productList.appendChild(listItem);
+                });
+            } catch (error) {
+                console.error('Error fetching products:', error);
+            }
+        }
+
+        // Add event listener to fetch all products when button is clicked
+        getProductsBtn.addEventListener('click', fetchProducts);
+    </script>
+</body>
+</html>

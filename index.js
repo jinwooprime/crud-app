@@ -1,17 +1,19 @@
+// Mongoose commands -> https://mongoosejs.com/docs/queries.html
 const express = require('express');
 // Creating an Express application
 const app = express();
+const cors = require('cors');
 const mongoose = require('mongoose');
 const Product = require('./models/product.model.js');
 
+app.use(cors());
 // Middleware to parse incoming JSON requests
 app.use(express.json());
-
 // Middleware to parse incoming URL-encoded requests
 app.use(express.urlencoded({extended: false}));
 
 // Route to test node server
-app.get('/', (req, res) => {
+app.get('/hello', (req, res) => {
     res.send("Hello from Node API Server Updated");
 });
 
@@ -84,7 +86,7 @@ app.delete('/api/product/:id', async (req,res) => {
 });
 
 // Connecting to MongoDB using Mongoose
-mongoose.connect("mongodb+srv://<username>:<password>@backenddb.2ansun2.mongodb.net/Node-API?retryWrites=true&w=majority&appName=BackendDB")
+mongoose.connect("mongodb+srv://only-for-node:7c9GTf3HbhXmdJFE@backenddb.2ansun2.mongodb.net/Node-API?retryWrites=true&w=majority&appName=BackendDB")
 .then(() => {
     console.log("Connected to MONGO!");
     app.listen(3000, () => {

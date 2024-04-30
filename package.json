@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/jinwooprime/crud-app#readme",
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.19.2",
     "mongodb": "^6.5.0",
     "mongoose": "^8.3.2"
